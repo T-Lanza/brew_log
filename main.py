@@ -1,50 +1,11 @@
 import tkinter as tk
 from recipe import Recipe
-from menu import main_menu
+from tkinter import ttk
+from get_date import get_date
 import json
 
-
+# Import Saved Recipes
 PATH = "DATA/recipes.json"
-
-def close_book_toggle(root, test_button, background):
-    for widget in root.winfo_children():
-        if widget != background:
-            widget.destroy()
-
-    # Insert Open Book
-    open_book_frame = tk.Frame(root, width=1030, height=700, bg="#854218")
-    open_book_frame.place(x=450, y=30)
-    open_book_canvas = tk.Canvas(open_book_frame, width=1030, height=700, bg="#854218")
-    open_book_canvas.pack(side="left")
-    open_book_image = tk.PhotoImage(file="Images/open.png")
-    open_book_canvas.create_image(0, 0, image=open_book_image, anchor="nw")
-
-    # Store the image in root to prevent garbage collection
-    root.open_book_image = tk.PhotoImage(file="Images/open.png")
-    open_book_canvas.create_image(0, 0, image=root.open_book_image, anchor="nw")
-
-    test_button.config(command=lambda: open_book_toggle(root, test_button, background))
-
-    main_menu(open_book_frame, recipes)
-
-def open_book_toggle(root, test_button, background):
-    for widget in root.winfo_children():
-        if widget != background:
-            widget.destroy()
-
-    # Insert Closed Book
-    open_book_frame = tk.Frame(root, width=1030, height=700, bg="#854218")
-    open_book_frame.place(x=450, y=30)
-    closed_book_canvas = tk.Canvas(open_book_frame, width=469, height=700, bg="#854218")
-    closed_book_canvas.place(x=561, y=0)
-    close_book_image = tk.PhotoImage(file="Images/closed.png")
-    closed_book_canvas.create_image(0, 0, image=close_book_image, anchor="nw")
-
-    # Store the image in root to prevent garbage collection
-    root.close_book_image = tk.PhotoImage(file="Images/closed.png")
-    closed_book_canvas.create_image(0, 0, image=root.close_book_image, anchor="nw")
-
-    test_button.config(command=lambda: close_book_toggle(root, test_button, background))
 
 with open(PATH, 'r') as file:
     content = file.read().strip()
@@ -53,30 +14,68 @@ with open(PATH, 'r') as file:
     else:
         recipes = json.load(file)
 
-# Build GUI
+# Build basic GUI
 root = tk.Tk()
-root.title("Oliver Noodle Vintner Catalogue")
-root.geometry(f"{root.winfo_screenwidth()}x{root.winfo_screenheight()}+0+0")
+root.geometry("750x500")
+root.resizable(False, False)
+root.title(f"Oliver Noodle Recipe Book | {get_date()}")
 
-# Make Background
-background = tk.Canvas(root, width=1600, height=900)
-background.pack()
-desktop = tk.PhotoImage(file="Images/wood.png")
-background.create_image(0,0, image=desktop, anchor="nw")
+# Add Recipe Button
+add_recipe_button = tk.Button(root)
+add_recipe_button.config(text="Add Recipe +", font=("Helvetica", 12))
+add_recipe_button.place(x=25, y=5)
 
+# Create Display Frame
+display = tk.Frame(root, width=700, height=420, bg="white")
+display.pack_propagate(False)
+display.place(x=25, y=55)
 
-# Insert Closed Book
-open_book_frame = tk.Frame(root, width=1030, height=700, bg="#854218")
-open_book_frame.place(x=450, y=30)
-closed_book_canvas = tk.Canvas(open_book_frame, width=469, height=700, bg="#854218")
-closed_book_canvas.place(x=561, y=0)
-close_book_image = tk.PhotoImage(file="Images/closed.png")
-closed_book_canvas.create_image(0, 0, image=close_book_image, anchor="nw")
+# Test Addition of things
+counter = 1
+for recipe in recipes:
+    recipe_frame = tk.Frame(display)
+    recipe_frame.config(width=700, height="40", bd=2, relief="solid")
+    recipe_frame.pack_propagate(False)
 
-# Test Button
-test_button = tk.Button(background)
-test_button.config(text="Test", command=lambda: close_book_toggle(root, test_button, background))
-test_button.place(x=100, y=100)
+    recipe_name = tk.Label(recipe_frame)
+    recipe_name.config(text=recipe.name, width=40, pady=11, font=("Helvetica", 12))
+    if counter % 2 != 0:
+        recipe_name.config(bg="white")
+    else:
+        recipe_name.config(bg="#E6EDFF")
 
-# Main GUI Loop
+    go_to_button = tk.Button(recipe_frame)
+    go_to_button.config(text=" >> ", height=40, bg="gray")
+
+    recipe_abv = tk.Label(recipe_frame)
+    recipe_abv.config(text=f"{recipe.abv}% ABV", width=10, pady=11, font=("Helvetica", 12))
+    if counter % 2 != 0:
+        recipe_abv.config(bg="#E6EDFF")
+    else:
+        recipe_abv.config(bg="white")
+
+    recipe_style = tk.Label(recipe_frame)
+    recipe_style.config(text=recipe.style, width=12, pady=11, font=("Helvetica", 12))
+    if counter % 2 != 0:
+        recipe_style.config(bg="white")
+    else:
+        recipe_style.config(bg="#E6EDFF")
+
+    recipe_rate = tk.Label(recipe_frame)
+    recipe_rate.config(text=f" {recipe.rate}/5 ", width=8, pady=11, font=("Helvetica", 12))
+    if counter % 2 != 0:
+        recipe_rate.config(bg="#E6EDFF")
+    else:
+        recipe_rate.config(bg="white")
+
+    recipe_frame.pack(side="top")
+    recipe_name.pack(side="left", anchor="w")
+    go_to_button.pack(side="right")
+    recipe_abv.pack(side="left", anchor="w")
+    recipe_style.pack(side="left", anchor="w")
+    recipe_rate.pack(side="left", anchor="w")
+
+    counter += 1
+
+# Main Loop
 root.mainloop()

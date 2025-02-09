@@ -2,7 +2,7 @@ import tkinter as tk
 from get_date import get_date
 
 class Recipe:
-    def __init__(self, name, style, option, og, yeast):
+    def __init__(self, name, style, og, yeast, rate):
         self.name = name
         measures = ["oz", "lb", "g", "gal", "pkt"]
         self.brew_styles = {
@@ -11,10 +11,12 @@ class Recipe:
             "liquors": ["Whiskey", "Rum", "Brandy", "Mezcal", "Grappa"],
             "beers": ["Beer", "Cider", "Perry", "Hydromel"]
         }
-        self.style = self.brew_styles[style][option]
+        self.style = style
         self.og = og
         self.fg = None
         self.yeast = yeast
+        self.abv = self.abv_calc()
+        self.rate = rate
         self.ingredients = []
         self.notes = []
     
@@ -22,7 +24,7 @@ class Recipe:
         if self.fg != None:
             return (self.og - self.fg) * 131.25
         else:
-            return ""
+            return "??"
         
     def add_ingredients(self, quantity, unit, item):
         ingredient = f"{quantity}{unit} {item}"
