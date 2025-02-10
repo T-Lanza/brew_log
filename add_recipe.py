@@ -83,13 +83,23 @@ def add_recipe(display, button, root):
                 entry_name_input,
                 style_dropdown,
                 entry_yeast_input,
+                og_input_entry,
+                notes_entry_input,
                 recipes):
         date = entry_date_input.get()
         name = entry_name_input.get()
         style = style_dropdown.get()
         yeast = entry_yeast_input.get()
-
-        new_recipe = Recipe(name, style, 1.1, yeast, date)
+        og = og_input_entry.get()
+        notes = notes_entry_input.get("1.0", tk.END)
+        today = get_date_num()
+        new_note = {
+            "date": today,
+            "note": notes
+        }
+        new_recipe = Recipe(name, style, og, yeast, date)
+        
+        new_recipe.notes.append(new_note)
         recipes.append(new_recipe)
 
         with open(PATH, 'w') as file:
@@ -155,23 +165,39 @@ def add_recipe(display, button, root):
     entry_yeast_input.config(width=12, font=("Helvetica", 14), bg="white", bd=2, relief="sunken")
     entry_yeast_input.place(x=165, y=92)
 
+    entry_og_label = tk.Label(entry_frame, text="    OG:")
+    entry_og_label.config(width=12, font=("Helvetica", 16), bg="#E6EDFF")
+    entry_og_label.place(x=0, y=122)
+
+    entry_og_input = tk.Entry(entry_frame)
+    entry_og_input.config(width=12, font=("Helvetica", 14), bg="white", bd=2, relief="sunken")
+    entry_og_input.place(x=165, y=122)
+
     entry_notes_label = tk.Label(entry_frame, text="Notes:")
     entry_notes_label.config(font=("Helvetica", 18), bg="#E6EDFF")
-    entry_notes_label.place(x=5, y=142)
+    entry_notes_label.place(x=5, y=162)
 
     entry_notes_input = tk.Text(entry_frame)
-    entry_notes_input.config(bd=2, relief="sunken", bg="white", width=34, height=10, wrap="word")
-    entry_notes_input.place(x=7, y=172)
-
-    # Test
+    entry_notes_input.config(bd=2, relief="sunken", bg="white", width=34, height=9, wrap="word")
+    entry_notes_input.place(x=7, y=192)
 
     test_button = tk.Button(display)
-    test_button.place(x=200, y=0)
-    test_button.config(text="XX", command=lambda: add_new(entry_date_input,
+    test_button.place(x=615, y=380)
+    test_button.config(text="Submit!", command=lambda: add_new(entry_date_input,
                                                   entry_name_input,
                                                   style_dropdown,
                                                   entry_yeast_input,
+                                                  entry_og_input,
+                                                  entry_notes_input,
                                                   recipes))
+    
+    for recipe in recipes:
+        if recipe["name"] == "Test 2":
+            for note in recipe["notes"]:
+                print(recipe["date"])
+                print(recipe["notes"])
+
+    # Test
 
     #options = [style for category in Recipe.brew_styles.values() for style in category]
     #dropdown = ttk.Combobox(entry_frame, values=options)
